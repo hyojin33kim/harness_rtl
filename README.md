@@ -78,3 +78,10 @@ cycle-accurate 판단은 simulation VCD와 assertion 결과를 기준으로 한�
 이 결과는 저장소에 구현된 interface와 event contract의 로컬 검증 근거다.
 SpaceWire compliance certification, FPGA CDC/timing closure 또는 실제 PHY 환경의
 recovery 검증을 의미하지 않는다.
+
+## Engineering rules and handover
+
+- [`docs/RTL_RULES.md`](docs/RTL_RULES.md): architecture, interface, ownership,
+  event, naming, reset/CDC, verification, waveform, and change-control rules
+- [`HANDOVER_WAVEFORM_INTERFACE_RESET_PARITY.md`](docs/handover/HANDOVER_WAVEFORM_INTERFACE_RESET_PARITY.md):
+  next-session execution order and evidence gates
