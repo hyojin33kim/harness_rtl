@@ -1,0 +1,9 @@
+{ "signal": [
+  { "name": "Link state",        "wave": "=.=.=.=.=", "data": ["RUN", "ER", "EW", "READY", "STARTED", "RUN"] },
+  { "name": "parity_err_evt",    "wave": "010......." },
+  { "name": "link_recovery_evt", "wave": "010......." },
+  { "name": "tx_enable",         "wave": "10....1..." },
+  { "name": "rx_enable",         "wave": "10.1......" },
+  { "name": "pending state",     "wave": "=.=.......", "data": ["held", "cleared"] },
+  { "name": "credit",           "wave": "=.=.....=.", "data": ["N", "0", "restored"] }
+], "config": { "hscale": 2 } }

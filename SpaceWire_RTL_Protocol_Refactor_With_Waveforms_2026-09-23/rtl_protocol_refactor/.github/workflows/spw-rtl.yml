@@ -1,0 +1,23 @@
+name: SpaceWire RTL
+
+on:
+  push:
+    paths:
+      - "**/*.sv"
+      - "run_regression.sh"
+      - ".github/workflows/spw-rtl.yml"
+  pull_request:
+    paths:
+      - "**/*.sv"
+      - "run_regression.sh"
+      - ".github/workflows/spw-rtl.yml"
+
+jobs:
+  iverilog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Compile and run contract regressions
+        run: bash run_regression.sh

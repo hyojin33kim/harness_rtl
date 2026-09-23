@@ -1,0 +1,10 @@
+{ "signal": [
+  { "name": "Link state",       "wave": "=.=.=.=.=", "data": ["ER", "EW", "READY", "STARTED", "CONNECTING", "RUN"] },
+  { "name": "rx_enable",        "wave": "01........" },
+  { "name": "tx_enable",        "wave": "0....1...." },
+  { "name": "RX Null commit",   "wave": "0...10...." },
+  { "name": "TX Null commit",   "wave": "0....10..." },
+  { "name": "FCT sent",         "wave": "0......10." },
+  { "name": "FCT received",     "wave": "0.......10" },
+  { "name": "parity_enable",    "wave": "0....1...." }
+], "config": { "hscale": 2 } }

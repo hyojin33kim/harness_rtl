@@ -1,0 +1,41 @@
+[*] GTKWave Analyzer v3.3.120
+[*] dumpfile "spw_story.vcd"
+[*] timestart 0
+@28
+-STORY / LINK STATUS
+tb_spw_story.story_phase[2:0]
+tb_spw_story.link_state[2:0]
+tb_spw_story.u_obs.obs_link_init_active
+tb_spw_story.u_obs.obs_link_run
+tb_spw_story.u_obs.obs_recovery_active
+tb_spw_story.u_obs.obs_reconnect_active
+tb_spw_story.u_obs.obs_error_any_evt
+-TX: DUT -> D/S LOOPBACK
+tb_spw_story.u_obs.obs_tx_char_kind[3:0]
+tb_spw_story.u_obs.obs_tx_char_hex[8:0]
+tb_spw_story.u_obs.obs_tx_char_evt
+tb_spw_story.u_obs.obs_tx_is_esc
+tb_spw_story.u_obs.obs_tx_is_null
+tb_spw_story.u_obs.obs_tx_is_fct
+tb_spw_story.u_obs.obs_tx_is_nchar
+-RX: D/S LOOPBACK -> DUT
+tb_spw_story.u_obs.obs_rx_char_kind[3:0]
+tb_spw_story.u_obs.obs_rx_char_hex[8:0]
+tb_spw_story.u_obs.obs_rx_char_evt
+tb_spw_story.u_obs.obs_rx_is_esc
+tb_spw_story.u_obs.obs_rx_is_null
+tb_spw_story.u_obs.obs_rx_is_fct
+tb_spw_story.u_obs.obs_rx_is_nchar
+-FLOW CONTROL / FIFO
+tb_spw_story.u_obs.obs_tx_credit_hex[5:0]
+tb_spw_story.u_obs.obs_rx_credit_hex[5:0]
+tb_spw_story.u_obs.obs_tx_fifo_level_hex[4:0]
+tb_spw_story.u_obs.obs_rx_fifo_level_hex[4:0]
+tb_spw_story.u_obs.obs_credit_available
+tb_spw_story.u_obs.obs_flow_blocked
+-SERIALIZER / PHYSICAL OUTPUT
+tb_spw_story.u_obs.obs_ser_bit_evt
+tb_spw_story.u_obs.obs_ser_bit_role[1:0]
+tb_spw_story.u_obs.obs_ser_bit_value
+tb_spw_story.tx_d
+tb_spw_story.tx_s

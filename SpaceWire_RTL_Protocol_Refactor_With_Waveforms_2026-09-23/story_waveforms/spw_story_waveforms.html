@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SpaceWire Story Waveforms</title>
+  <style>
+    :root{--ink:#111827;--muted:#475569;--grid:#cbd5e1;--blue:#2563eb;--pale:#dbeafe;--orange:#ea580c;--red:#dc2626;--green:#15803d}
+    *{box-sizing:border-box} body{margin:28px;background:#fff;color:var(--ink);font:16px/1.4 Arial,"Noto Sans KR",sans-serif}
+    h1{font-size:30px;margin:0 0 6px} h2{font-size:23px;margin:0 0 6px}.note{color:var(--muted);margin:0 0 24px}
+    section{max-width:1450px;margin:20px 0;padding:22px;border:1px solid var(--grid);border-radius:12px;box-shadow:0 1px 3px #0001}
+    .flow{font-size:17px;font-weight:700;color:#1e3a8a;margin:7px 0 16px}.scroll{overflow-x:auto}
+    table{border-collapse:collapse;min-width:1120px;width:100%}th,td{height:40px;border:1px solid #e2e8f0;text-align:center;position:relative}
+    th{font-size:13px;background:#f8fafc;color:var(--muted)}th:first-child,td:first-child{width:210px;min-width:210px;text-align:left;padding-left:10px;font-size:16px;font-weight:700;color:var(--ink);background:#fff}
+    td.state{background:var(--pale);font-weight:700;border-color:#93c5fd}td.run{background:#dcfce7;border-color:#86efac}td.warn{background:#ffedd5;border-color:#fdba74}
+    td.lo:after,td.hi:after,td.pulse:after,td.err:after{content:"";position:absolute;left:-1px;right:-1px;height:4px;background:var(--blue)}
+    td.lo:after{bottom:7px}td.hi:after{top:7px}.pulse:before,.err:before{content:"";position:absolute;left:18%;right:18%;top:7px;bottom:7px;border-left:4px solid var(--orange);border-right:4px solid var(--orange)}
+    td.pulse:after{top:7px;left:18%;right:18%;background:var(--orange)}td.err:after{top:7px;left:18%;right:18%;background:var(--red)}td.err:before{border-color:var(--red)}
+    .legend{max-width:1400px;color:var(--muted);margin-top:18px}.dot{display:inline-block;width:11px;height:11px;margin:0 4px 0 14px;border-radius:50%}.blue{background:var(--blue)}.orange{background:var(--orange)}.red{background:var(--red)}.green{background:var(--green)}
+  </style>
+</head>
+<body>
+  <h1>SpaceWire Story Waveforms</h1>
+  <p class="note">상위 흐름을 읽기 위한 narrative 기준파형입니다. 실제 cycle 판정은 VCD/GTKWave와 assertion 결과를 사용합니다. 이 파일은 외부 연결 없이 표시됩니다.</p>
+
+  <section><h2>1. Link Initialization</h2><div class="flow">ERROR_RESET → ERROR_WAIT → READY → STARTED → CONNECTING → RUN</div><div class="scroll"><table>
+    <tr><th>Signal / phase</th><th>T0</th><th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>T8</th><th>T9</th></tr>
+    <tr><td>Link state</td><td class="state warn">ER</td><td class="state">EW</td><td class="state">READY</td><td class="state">READY</td><td class="state">STARTED</td><td class="state">STARTED</td><td class="state">CONNECTING</td><td class="state">CONNECTING</td><td class="state run">RUN</td><td class="state run">RUN</td></tr>
+    <tr><td>rx_enable</td><td class="lo"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td></tr>
+    <tr><td>tx_enable</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td></tr>
+    <tr><td>RX Null commit</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="pulse"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td></tr>
+    <tr><td>TX Null commit</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="pulse"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td></tr>
+    <tr><td>FCT sent</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="pulse"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td></tr>
+    <tr><td>FCT received</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="pulse"></td><td class="lo"></td><td class="lo"></td></tr>
+  </table></div></section>
+
+  <section><h2>2. Flow Control</h2><div class="flow">FCT received → credit +8 → N-Char accepted → TX commit → RX commit → Host RX</div><div class="scroll"><table>
+    <tr><th>Signal / phase</th><th>T0</th><th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>T8</th><th>T9</th></tr>
+    <tr><td>Link state</td><td class="state run">RUN</td><td class="state run">RUN</td><td class="state run">RUN</td><td class="state run">RUN</td><td class="state run">RUN</td><td class="state run">RUN</td><td class="state run">RUN</td><td class="state run">RUN</td><td class="state run">RUN</td><td class="state run">RUN</td></tr>
+    <tr><td>FCT received</td><td class="lo"></td><td class="pulse"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td></tr>
+    <tr><td>tx_credit</td><td class="state">0</td><td class="state run">8</td><td class="state run">8</td><td class="state run">8</td><td class="state run">8</td><td class="state run">8</td><td class="state run">8</td><td class="state">7</td><td class="state">7</td><td class="state">7</td></tr>
+    <tr><td>nchar_valid</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td></tr>
+    <tr><td>NET_TX_ACCEPT</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="pulse"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td></tr>
+    <tr><td>TX_NCHAR_COMMIT</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="pulse"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td></tr>
+    <tr><td>NET_RX_ACCEPT</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="pulse"></td><td class="lo"></td></tr>
+    <tr><td>host_rx_valid</td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="hi"></td></tr>
+  </table></div></section>
+
+  <section><h2>3. Link Error Recovery</h2><div class="flow">RUN → parity error → recovery/credit clear → ERROR_RESET → reconnect → RUN</div><div class="scroll"><table>
+    <tr><th>Signal / phase</th><th>T0</th><th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>T8</th><th>T9</th></tr>
+    <tr><td>Link state</td><td class="state run">RUN</td><td class="state warn">ER</td><td class="state">EW</td><td class="state">EW</td><td class="state">READY</td><td class="state">READY</td><td class="state">STARTED</td><td class="state">STARTED</td><td class="state run">RUN</td><td class="state run">RUN</td></tr>
+    <tr><td>parity_err_evt</td><td class="lo"></td><td class="err"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td></tr>
+    <tr><td>link_recovery_evt</td><td class="lo"></td><td class="err"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td></tr>
+    <tr><td>tx_enable</td><td class="hi"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="lo"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td></tr>
+    <tr><td>rx_enable</td><td class="hi"></td><td class="lo"></td><td class="lo"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td><td class="hi"></td></tr>
+    <tr><td>pending state</td><td class="state warn">held</td><td class="state run">cleared</td><td class="state run">cleared</td><td class="state run">cleared</td><td class="state run">cleared</td><td class="state run">cleared</td><td class="state run">cleared</td><td class="state run">cleared</td><td class="state run">cleared</td><td class="state run">cleared</td></tr>
+    <tr><td>credit</td><td class="state">N</td><td class="state warn">0</td><td class="state warn">0</td><td class="state warn">0</td><td class="state warn">0</td><td class="state warn">0</td><td class="state warn">0</td><td class="state warn">0</td><td class="state run">restored</td><td class="state run">restored</td></tr>
+  </table></div></section>
+  <p class="legend"><span class="dot blue"></span>level/state <span class="dot orange"></span>commit/event <span class="dot red"></span>error/recovery <span class="dot green"></span>RUN/available — 시간 간격은 개념적이며 실제 clock 비율이 아닙니다.</p>
+</body>
+</html>

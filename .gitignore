@@ -1,0 +1,16 @@
+# Generated simulation/build artifacts
+**/build/
+**/*.vcd
+**/*.fst
+**/*.wlf
+**/*.log
+**/*.vvp
+
+# Local tool state
+.agents/
+.codex/
+**/.ver0/
+
+# Editor/OS noise
+*~
+.DS_Store
