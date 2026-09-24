@@ -5,6 +5,17 @@ completion contract로 재구성한 RTL 검증 저장소다. 최신 candidate에
 SystemVerilog RTL, directed regression, 통합 story waveform, GTKWave preset이
 포함되어 있다.
 
+## 보관된 작업 브랜치
+
+- 2026-09-24: [`wip/spw-datalink-v5-20260924`](https://github.com/hyojin33kim/harness_rtl/tree/wip/spw-datalink-v5-20260924)
+  (커밋 `037caa4`) — Data Link v4/v5 후보, I/F·F/F 코딩 규칙,
+  성능 baseline과 dual-endpoint backpressure 검증. `main`에 합치지 않은
+  백업이며, 커밋하지 않은 로컬 v1~v3 파일은 포함하지 않는다.
+
+다시 작업할 때는 `git fetch origin` 후
+`git switch -c review-spw-v5 origin/wip/spw-datalink-v5-20260924`로
+별도 로컬 브랜치를 만든다.
+
 ## Current candidate
 
 [`SpaceWire_RTL_Protocol_Refactor_With_Waveforms_2026-09-23/`](SpaceWire_RTL_Protocol_Refactor_With_Waveforms_2026-09-23/)
