@@ -1,0 +1,94 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
+[*] Wed Sep 23 09:27:14 2026
+[*]
+[dumpfile] "/home/hyojinkim/work/3_Company_PJT/harness/rtl/SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/build/spw_story.vcd"
+[dumpfile_mtime] "Wed Sep 23 04:41:47 2026"
+[dumpfile_size] 272705
+[savefile] "/home/hyojinkim/work/3_Company_PJT/harness/rtl/SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/flow_control.gtkw"
+[timestart] 18378000
+[size] 1555 976
+[pos] -1 -1
+*-20.388445 19057000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_spw_story.
+[treeopen] tb_spw_story.dut.
+[sst_width] 284
+[signals_width] 421
+[sst_expanded] 1
+[sst_vpaned_height] 287
+@200
+-STORY / SEMANTIC EVENTS
+@22
+tb_spw_story.story_phase[2:0]
+tb_spw_story.link_state[2:0]
+@28
+tb_spw_story.u_obs.obs_link_run
+@22
+tb_spw_story.u_obs.obs_tx_char_kind[3:0]
+tb_spw_story.u_obs.obs_tx_char_hex[8:0]
+@28
+tb_spw_story.u_obs.obs_tx_char_evt
+tb_spw_story.u_obs.obs_tx_is_null
+tb_spw_story.u_obs.obs_tx_is_fct
+tb_spw_story.u_obs.obs_tx_is_nchar
+tb_spw_story.u_obs.obs_tx_is_esc
+@22
+tb_spw_story.u_obs.obs_rx_char_kind[3:0]
+tb_spw_story.u_obs.obs_rx_char_hex[8:0]
+@28
+tb_spw_story.u_obs.obs_rx_char_evt
+tb_spw_story.u_obs.obs_rx_is_nchar
+@22
+tb_spw_story.u_obs.obs_tx_credit_hex[5:0]
+tb_spw_story.u_obs.obs_rx_credit_hex[5:0]
+tb_spw_story.u_obs.obs_tx_fifo_level_hex[4:0]
+tb_spw_story.u_obs.obs_rx_fifo_level_hex[4:0]
+@28
+tb_spw_story.u_obs.obs_credit_available
+tb_spw_story.u_obs.obs_flow_blocked
+@200
+-TX: HOST -> NETWORK FIFO
+@22
+tb_spw_story.host_tx_item[8:0]
+@28
+tb_spw_story.host_tx_valid
+tb_spw_story.host_tx_ready
+tb_spw_story.dut.w_net_tx_valid
+@24
+tb_spw_story.dut.u_spw_network.r_tx_count[4:0]
+@22
+tb_spw_story.dut.u_spw_network.r_tx_wptr[3:0]
+@24
+tb_spw_story.dut.u_spw_network.r_tx_rptr[3:0]
+@200
+-TX: NETWORK -> DATALINK
+@22
+tb_spw_story.dut.w_net_tx_data[8:0]
+@28
+tb_spw_story.dut.w_net_tx_ready
+@200
+-CREDIT OWNERSHIP / COMMIT
+@28
+tb_spw_story.dut.u_spw_datalink.w_tx_fct_commit_evt
+@22
+tb_spw_story.dut.u_spw_datalink.u_credit.r_tx_credit[5:0]
+@28
+tb_spw_story.dut.u_spw_datalink.w_got_fct
+@22
+tb_spw_story.dut.u_spw_datalink.u_credit.r_rx_credit[5:0]
+tb_spw_story.dut.w_rx_fifo_free_count[4:0]
+@28
+tb_spw_story.dut.u_spw_datalink.w_tx_nchar_commit_evt
+@200
+-RX: DATALINK -> NETWORK FIFO -> HOST
+@28
+tb_spw_story.dut.w_net_rx_ready
+tb_spw_story.dut.w_net_rx_valid
+tb_spw_story.u_obs.obs_net_rx_accept_evt
+@22
+tb_spw_story.host_rx_item[8:0]
+@28
+tb_spw_story.host_rx_valid
+tb_spw_story.host_rx_ready
+[pattern_trace] 1
+[pattern_trace] 0
