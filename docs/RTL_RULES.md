@@ -117,6 +117,8 @@ Current boundary definitions:
 | `CODE-02` | Simultaneous increments/decrements of one state variable are resolved in one next-value expression or one case statement. | MUST |
 | `CODE-03` | Timer/count widths derive from parameters; ceiling arithmetic and minimum width prevent early timeout and zero-width vectors. | MUST |
 | `CODE-04` | Invalid parameter ratios fail during simulation rather than silently rounding protocol timing. | MUST |
+| `CODE-05` | In new or refactored module port lists, group declarations in this order: clock/reset, TX data I/F, TX control I/F, RX data I/F, RX control I/F, then link-wide control/status. Separate groups with a blank line; omit empty TX/RX groups. TX/RX follow `NAM-04`. Reordering must not change port names, directions, widths, or connections. | MUST for new/refactored RTL |
+| `CODE-06` | If one FF has both asynchronous hardware reset and synchronous reset/flush, keep one driver: put the async reset in the outer `if (!i_rst_n)` branch of `always_ff @(posedge i_clk or negedge i_rst_n)`, and put synchronous control inside its clocked `else` branch, ahead of normal updates. Do not split one register across FF blocks or change reset priority as part of formatting. | MUST for new/refactored RTL |
 
 Known deviations: some stored outputs still use names such as `or_*`; the Link
 FSM uses localparams rather than a typed enum; an `n_*` next-state convention is
@@ -137,6 +139,10 @@ baseline claim.
 The requested reset hierarchy cleanup—separating hardware asynchronous reset
 from locally derived synchronous protocol resets—is `PROPOSED`. A register-by-
 register reset-domain matrix must be approved before RTL modification.
+This is distinct from `CODE-06`, which only makes the existing async/sync
+branches visually explicit; it does not reclassify a register, add/remove a
+reset, or change the reset domain. The v5 Data Link candidate records its
+unchanged reset ownership in `SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/RESET_MATRIX.md`.
 
 ## 10. Verification and evidence gates
 

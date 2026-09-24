@@ -1,0 +1,106 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
+[*] Wed Sep 23 12:19:33 2026
+[*]
+[dumpfile] "/home/hyojinkim/work/3_Company_PJT/harness/rtl/SpaceWire_RTL_Datalink_Credit_2026-09-24_v4/build/spw_story.vcd"
+[savefile] "/home/hyojinkim/work/3_Company_PJT/harness/rtl/SpaceWire_RTL_Datalink_Credit_2026-09-24_v4/error_recovery.gtkw"
+[timestart] 0
+[size] 2172 970
+[pos] -1 -1
+*-23.328865 22255000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_spw_story.
+[treeopen] tb_spw_story.dut.
+[treeopen] tb_spw_story.dut.u_spw_phy.
+[sst_width] 284
+[signals_width] 355
+[sst_expanded] 1
+[sst_vpaned_height] 285
+@200
+-STORY / LINK RECOVERY
+@22
+tb_spw_story.story_phase[2:0]
+@23
+tb_spw_story.link_state[2:0]
+@22
+tb_spw_story.u_obs.obs_link_run
+@28
+tb_spw_story.u_obs.obs_tx_char_kind[3:0]
+@22
+tb_spw_story.u_obs.obs_rx_char_kind[3:0]
+tb_spw_story.dut.u_spw_datalink.w_next_state[2:0]
+@200
+-ERROR EVENTS
+@28
+tb_spw_story.dut.w_link_recovery
+tb_spw_story.u_obs.obs_recovery_active
+tb_spw_story.u_obs.obs_reconnect_active
+tb_spw_story.u_obs.obs_error_any_evt
+[color] 1
+tb_spw_story.dut.u_spw_enc.or_parity_err
+[color] 1
+tb_spw_story.err_disconnect
+[color] 4
+tb_spw_story.err_parity
+tb_spw_story.err_esc
+tb_spw_story.err_credit
+@8000024
+tb_spw_story.dut.u_spw_phy.r_no_change_cnt[6:0]
+@28
+tb_spw_story.dut.u_spw_phy.w_sync_rst_cnt
+@20000
+-
+@28
+tb_spw_story.dut.w_enc_tx_enable
+tb_spw_story.dut.w_enc_rx_enable
+tb_spw_story.dut.w_enc_rx_parity_enable
+tb_spw_story.u_obs.obs_tx_abort_evt
+@200
+-ESC / RX CONTEXT
+@28
+tb_spw_story.dut.u_spw_datalink.r_esc_pending
+tb_spw_story.u_obs.i_rx_pending_esc
+tb_spw_story.dut.u_spw_enc.r_rx_pending_valid
+tb_spw_story.dut.u_spw_enc.r_rx_locked
+@200
+-PHY DISCONNECT CONTEXT
+@28
+tb_spw_story.dut.u_spw_phy.r_seen_any_transition
+@22
+tb_spw_story.dut.u_spw_phy.r_no_change_cnt[6:0]
+@28
+tb_spw_story.dut.u_spw_enc.w_rx_bit
+tb_spw_story.dut.u_spw_enc.w_rx_changed
+tb_spw_story.tx_d
+tb_spw_story.tx_s
+tb_spw_story.dut.u_spw_enc.i_rx_ds_data
+tb_spw_story.dut.u_spw_enc.i_rx_ds_strobe
+@22
+tb_spw_story.dut.u_spw_enc.i_enc_tx_char[8:0]
+@28
+tb_spw_story.dut.u_spw_enc.i_enc_tx_valid
+@22
+tb_spw_story.dut.u_spw_enc.o_enc_rx_char[8:0]
+@28
+tb_spw_story.dut.u_spw_enc.o_enc_parity_error
+tb_spw_story.dut.u_spw_enc.i_link_recovery_evt
+tb_spw_story.dut.u_spw_datalink.w_entering_error_reset
+tb_spw_story.dut.u_spw_datalink.i_enc_parity_error
+tb_spw_story.dut.u_spw_enc.w_tx_reset_evt
+tb_spw_story.dut.u_spw_enc.o_enc_tx_abort
+tb_spw_story.dut.u_spw_datalink.w_credit_sync_rst
+tb_spw_story.dut.u_spw_datalink.w_timer_sync_rst
+tb_spw_story.dut.u_spw_enc.r_rx_prev_payload_parity
+tb_spw_story.dut.u_spw_enc.r_rx_parity_bit
+tb_spw_story.dut.u_spw_enc.w_rx_bit
+tb_spw_story.dut.u_spw_datalink.w_got_null
+tb_spw_story.dut.u_spw_enc.w_rx_prev_parity_ok
+tb_spw_story.dut.u_spw_datalink.r_null_seen
+tb_spw_story.dut.u_spw_enc.o_enc_rx_valid
+tb_spw_story.dut.u_spw_enc.i_tx_enable
+tb_spw_story.dut.u_spw_enc.r_prev_tx_enable
+tb_spw_story.dut.u_spw_datalink.w_entering_connecting
+tb_spw_story.dut.u_spw_enc.r_tx_active
+tb_spw_story.dut.u_spw_enc.o_enc_tx_commit
+tb_spw_story.dut.u_spw_enc.o_enc_tx_ready
+[pattern_trace] 1
+[pattern_trace] 0
