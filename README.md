@@ -146,3 +146,7 @@ cycle-accurate 판단은 simulation VCD와 assertion 결과를 기준으로 한�
 `build/`, VCD, VVP, log와 `codex_*.md` 세션 로그는 재생성 가능하거나 로컬 전용인
 자료이므로 Git에서 제외한다. RTL과 script의 줄바꿈은 `.gitattributes`에서 LF로
 고정한다.
+
+## SpaceWire story waveform overview
+
+![SpaceWire story waveform overview](docs/Image_overview.png)
