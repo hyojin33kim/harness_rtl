@@ -31,7 +31,7 @@ reviewable gates:
 
 1. `docs/RTL_RULES.md`
 2. `README.md`
-3. `SpaceWire_RTL_Protocol_Refactor_With_Waveforms_2026-09-23/rtl_protocol_refactor/PROTOCOL_REFACTOR_REPORT.md`
+3. `rtl/baseline/rtl_protocol_refactor/PROTOCOL_REFACTOR_REPORT.md`
 4. The five RTL modules, story TB, observer, four GTKWave presets, and regression scripts
 
 ## Execution order and gates

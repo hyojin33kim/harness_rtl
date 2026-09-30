@@ -1,7 +1,7 @@
 # Handover — DECISION-17 and SpaceWire rate envelope
 
 - Date: 2026-09-25
-- Scope: `SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5` candidate only
+- Scope: `rtl/candidates/datalink-v5` candidate only
 - Status: implementation and directed tests complete; adoption and compliance
   decision open; default RTL unchanged; no merge or commit made in this work
 - Source design repository: `../../../../spec2rtl/spacewire`

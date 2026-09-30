@@ -6,8 +6,8 @@ completion contract로 재구성하고, DataLink 내부 경계와 arbitration �
 
 ## Current status
 
-- Baseline: [`SpaceWire_RTL_Protocol_Refactor_With_Waveforms_2026-09-23/`](SpaceWire_RTL_Protocol_Refactor_With_Waveforms_2026-09-23/)
-- Latest isolated candidate: [`SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/`](SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/)
+- Baseline: [`rtl/baseline/`](rtl/baseline/)
+- Latest isolated candidate: [`rtl/candidates/datalink-v5/`](rtl/candidates/datalink-v5/)
 - Verification: 2026-09-30 candidate regression PASS
 - Adoption status: DECISION-17 구현과 directed verification은 완료됐지만,
   ECSS Broadcast priority와의 충돌 때문에 기본 RTL 채택 여부는 미결정
@@ -21,16 +21,15 @@ Timecode가 FCT 또는 credited N-Char와 연속 경합할 때 8회마다 다른
 
 | Candidate | Scope |
 |---|---|
-| [`ReviewSplit v1`](SpaceWire_RTL_Datalink_ReviewSplit_2026-09-24_v1/) | DataLink review boundary 분리 |
-| [`RxHold v2`](SpaceWire_RTL_Datalink_RxHold_2026-09-24_v2/) | RX holding contract 분리 |
-| [`RxDecode v3`](SpaceWire_RTL_Datalink_RxDecode_2026-09-24_v3/) | RX decode contract 분리 |
-| [`Credit v4`](SpaceWire_RTL_Datalink_Credit_2026-09-24_v4/) | credit accounting boundary 분리 |
-| [`InterfaceResetStyle v5`](SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/) | interface/reset-style 정리 및 DECISION-17 실험 |
+| [`ReviewSplit v1`](archive/2026-09/datalink-v1-review-split/) | DataLink review boundary 분리 |
+| [`RxHold v2`](archive/2026-09/datalink-v2-rx-hold/) | RX holding contract 분리 |
+| [`RxDecode v3`](archive/2026-09/datalink-v3-rx-decode/) | RX decode contract 분리 |
+| [`Credit v4`](rtl/candidates/datalink-v4/) | credit accounting boundary 분리; v5 비교 기준 |
+| [`InterfaceResetStyle v5`](rtl/candidates/datalink-v5/) | interface/reset-style 정리 및 DECISION-17 실험 |
 
-2026-09-24의 보관 브랜치
-[`wip/spw-datalink-v5-20260924`](https://github.com/hyojin33kim/harness_rtl/tree/wip/spw-datalink-v5-20260924)
-(`037caa4`)는 초기 v4/v5 체크포인트다. 이후 DECISION-17 변경과 v1–v3 자료는
-현재 `main`을 기준으로 한다.
+구조 변경 전 전체 상태는 tag `pre-layout-cleanup-2026-09-30`에 보존했다.
+초기 실험 snapshot은 [`archive/2026-09/`](archive/2026-09/)에 두고,
+현재 회귀검증에 필요한 baseline과 v4/v5만 `rtl/`에 유지한다.
 
 ## Interface contracts
 
@@ -42,9 +41,9 @@ Timecode가 FCT 또는 credited N-Char와 연속 경합할 때 8회마다 다른
 | DataLink → Network | one-entry holding register를 둔 `net_rx_valid/ready` |
 
 Baseline의 상세 설계 판단은
-[`PROTOCOL_REFACTOR_REPORT.md`](SpaceWire_RTL_Protocol_Refactor_With_Waveforms_2026-09-23/rtl_protocol_refactor/PROTOCOL_REFACTOR_REPORT.md),
+[`PROTOCOL_REFACTOR_REPORT.md`](rtl/baseline/rtl_protocol_refactor/PROTOCOL_REFACTOR_REPORT.md),
 최신 candidate의 변경과 측정값은
-[`v5 README`](SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/README.md)를
+[`v5 README`](rtl/candidates/datalink-v5/README.md)를
 참조한다.
 
 ## Requirements
@@ -66,7 +65,7 @@ sudo apt-get install -y iverilog gtkwave python3
 저장소 루트에서 실행한다.
 
 ```bash
-bash SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/run_candidate_regression.sh
+bash rtl/candidates/datalink-v5/run_candidate_regression.sh
 ```
 
 전체 실행 범위:
@@ -122,8 +121,8 @@ candidate regression 실행 후:
 
 ```bash
 gtkwave \
-  SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/build/spw_story.vcd \
-  SpaceWire_RTL_Protocol_Refactor_With_Waveforms_2026-09-23/story_waveforms/overview.gtkw
+  rtl/candidates/datalink-v5/build/spw_story.vcd \
+  rtl/baseline/story_waveforms/overview.gtkw
 ```
 
 세부 preset은 candidate 디렉터리의 `link_initialize.gtkw`,

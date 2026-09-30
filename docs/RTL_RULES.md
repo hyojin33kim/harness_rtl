@@ -142,7 +142,7 @@ register reset-domain matrix must be approved before RTL modification.
 This is distinct from `CODE-06`, which only makes the existing async/sync
 branches visually explicit; it does not reclassify a register, add/remove a
 reset, or change the reset domain. The v5 Data Link candidate records its
-unchanged reset ownership in `SpaceWire_RTL_Datalink_InterfaceResetStyle_2026-09-24_v5/RESET_MATRIX.md`.
+unchanged reset ownership in `rtl/candidates/datalink-v5/RESET_MATRIX.md`.
 
 ## 10. Verification and evidence gates
 
