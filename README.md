@@ -149,4 +149,4 @@ cycle-accurate 판단은 simulation VCD와 assertion 결과를 기준으로 한�
 
 ## SpaceWire story waveform overview
 
-![SpaceWire story waveform overview](docs/Image_overview.png)
+![SpaceWire story waveform overview](docs/Image_overview_1.png)
