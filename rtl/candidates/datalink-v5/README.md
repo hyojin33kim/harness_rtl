@@ -5,6 +5,11 @@ style-only copy of v4; the current candidate adds DECISION-17 Option B. v4
 and the default RTL are unchanged. The original layout follows
 `docs/RTL_RULES.md` `CODE-05` and `CODE-06`.
 
+> Product decision (2026-09-30): Option A, strict Broadcast priority, is the
+> default policy with `latest-wins + drop counter` admission. Option C,
+> Run-time link-rate control, is a later performance extension. This Option B
+> throttle remains measurement evidence and is not the product default.
+
 ## DECISION-17 experiment
 
 `spw_datalink_tx.svh` now counts Timecode requests selected while an FCT or
@@ -48,8 +53,10 @@ A Timecode occupies 14 serial bits (4-bit ESC plus 10-bit data character):
 1.4 us at 10 Mbps and 560 ns at 25 Mbps, before implementation overhead.
 Thus the 700–1,000 ns request period is not merely a synthetic maximum-rate
 case at 10 Mbps. These four cases do not establish an all-rate guarantee.
-See `../docs/handover/HANDOVER_DECISION17_RATE_ENVELOPE_2026-09-25.md` for
-the adoption and architecture decisions still open.
+See [`../../../docs/decisions/DECISION-17_TIMECODE_ADMISSION.md`](../../../docs/decisions/DECISION-17_TIMECODE_ADMISSION.md)
+for the adopted product policy and
+[`../../../docs/handover/HANDOVER_DECISION17_RATE_ENVELOPE_2026-09-25.md`](../../../docs/handover/HANDOVER_DECISION17_RATE_ENVELOPE_2026-09-25.md)
+for the measurement evidence.
 
 The five-case TB is part of `run_candidate_regression.sh`. After the change, the
 existing directed, child-contract, story, GTKWave and 64-item burst tests pass;

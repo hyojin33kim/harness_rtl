@@ -62,3 +62,10 @@ character commit은 독립 FCT와 구분하여 `NULL`로 표시한다.
 
 Error story의 parity error는 Link recovery 흐름만 분리해서 보기 위해 TB에서 내부 error event를 강제한다.
 실제 D/S bit corruption에 의한 parity 검증은 별도 Encoding physical test가 담당해야 한다.
+
+## Link initialization waveform
+
+`gtkwave spw_story.vcd link_initialize.gtkw`로 연 실제 baseline story의
+link initialization 구간이다.
+
+![GTKWave link initialization story](images/link_initialize_gtkwave.png)

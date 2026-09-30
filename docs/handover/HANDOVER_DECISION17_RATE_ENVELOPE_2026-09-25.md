@@ -1,5 +1,11 @@
 # Handover — DECISION-17 and SpaceWire rate envelope
 
+> Update 2026-09-30: the open product decision below is resolved. Option A
+> (strict Broadcast priority) is the default, with `latest-wins + drop counter`
+> admission. Option C (Run-time link-rate control) is a performance extension.
+> See [`../decisions/DECISION-17_TIMECODE_ADMISSION.md`](../decisions/DECISION-17_TIMECODE_ADMISSION.md).
+> The remainder of this file preserves the 2026-09-25 measurement handover.
+
 - Date: 2026-09-25
 - Scope: `rtl/candidates/datalink-v5` candidate only
 - Status: implementation and directed tests complete; adoption and compliance

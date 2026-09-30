@@ -9,10 +9,12 @@ completion contract로 재구성하고, DataLink 내부 경계와 arbitration �
 - Baseline: [`rtl/baseline/`](rtl/baseline/)
 - Latest isolated candidate: [`rtl/candidates/datalink-v5/`](rtl/candidates/datalink-v5/)
 - Verification: 2026-09-30 candidate regression PASS
-- Adoption status: DECISION-17 구현과 directed verification은 완료됐지만,
-  ECSS Broadcast priority와의 충돌 때문에 기본 RTL 채택 여부는 미결정
+- Adoption status: DECISION-17 제품 정책 확정; 기본 RTL 반영은 미구현
 
-v5는 v4의 interface/reset-style 정리 위에 DECISION-17 Option B를 추가한다.
+제품 기본 정책은 strict Broadcast priority를 유지하는 Option A와
+`latest-wins + drop counter` admission이다. Run-time link-rate 변경은 Option C
+성능 확장안으로 분리한다. v5는 v4의 interface/reset-style 정리 위에
+DECISION-17 Option B를 추가한 실험 candidate다.
 Timecode가 FCT 또는 credited N-Char와 연속 경합할 때 8회마다 다른 traffic에
 한 slot을 허용해 저속 링크의 starvation을 제한한다. baseline과 이전 candidate는
 비교 및 회귀 검증 근거로 유지한다.
@@ -101,18 +103,21 @@ PASS candidate regression: 8 directed + RX hold/decode/credit contracts + story 
 검증 근거다. SpaceWire compliance certification, 전체 rate envelope, FPGA
 CDC/timing closure, 실제 PHY recovery 또는 formal equivalence를 의미하지 않는다.
 
-## DECISION-17 risk
+## DECISION-17 product policy
 
 ECSS-E-ST-50-12C Rev.1 5.5.6은 Broadcast에 FCT/N-Char보다 높은 priority를
-요구한다. v5의 throttle은 8회 연속 경합 후 pending Timecode보다 다른 traffic을
-먼저 보낼 수 있으므로 strict compliance와 liveness 사이의 product-level 결정이
-필요하다. 채택 전 결정 사항은 다음과 같다.
+요구한다. 따라서 제품 기본 정책은 다음과 같이 확정했다.
 
-1. 지원할 per-port rate 범위와 Run-time rate 변경 방식
-2. wire capacity를 넘는 Timecode 요청의 drop/coalescing 정책
-3. DECISION-17 예외를 허용할지, strict Broadcast priority를 유지할지
+1. **Option A — 기본 정책:** strict Broadcast priority를 유지한다.
+2. **Admission:** pending Timecode가 전송되기 전에 새 요청이 오면 최신 값으로
+   교체하고, 폐기된 이전 요청을 drop counter에 누적한다.
+3. **Option C — 성능 확장:** per-port Run-time link-rate 변경은 별도 설계와
+   검증을 거쳐 추가한다.
 
-근거와 후속 작업은
+현재 v5 Option B throttle은 성능 실험 근거로 보존하지만 제품 기본 RTL에는
+채택하지 않는다. 정책의 구현 경계와 검증 조건은
+[`DECISION-17_TIMECODE_ADMISSION.md`](docs/decisions/DECISION-17_TIMECODE_ADMISSION.md),
+측정 근거는
 [`HANDOVER_DECISION17_RATE_ENVELOPE_2026-09-25.md`](docs/handover/HANDOVER_DECISION17_RATE_ENVELOPE_2026-09-25.md)에 정리되어 있다.
 
 ## Open story waveforms
