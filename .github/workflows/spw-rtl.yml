@@ -26,10 +26,10 @@ concurrency:
 jobs:
   candidate-regression:
     name: Candidate regression (Icarus)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install Icarus Verilog
         run: sudo apt-get update && sudo apt-get install -y iverilog
       - name: Check shell syntax
@@ -39,10 +39,10 @@ jobs:
 
   dual-comparison:
     name: v4/v5 dual comparison (Verilator)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install Verilator
         run: sudo apt-get update && sudo apt-get install -y verilator
       - name: Compare v4 and v5 under dual backpressure
