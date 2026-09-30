@@ -1,0 +1,49 @@
+name: SpaceWire RTL
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/spw-rtl.yml"
+      - "rtl/**"
+      - "verification/**"
+      - ".gitattributes"
+  pull_request:
+    paths:
+      - ".github/workflows/spw-rtl.yml"
+      - "rtl/**"
+      - "verification/**"
+      - ".gitattributes"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spw-rtl-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-regression:
+    name: Candidate regression (Icarus)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Check shell syntax
+        run: git ls-files '*.sh' | xargs -r -n1 bash -n
+      - name: Run DataLink v5 regression
+        run: bash rtl/candidates/datalink-v5/run_candidate_regression.sh
+
+  dual-comparison:
+    name: v4/v5 dual comparison (Verilator)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Compare v4 and v5 under dual backpressure
+        run: bash rtl/candidates/datalink-v5/run_dual_comparison.sh
