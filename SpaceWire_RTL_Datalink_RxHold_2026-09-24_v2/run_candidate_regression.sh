@@ -13,8 +13,6 @@ SOURCES=(
   "$RTL_DIR/spw_phy.sv"
   "$RTL_DIR/spw_enc.sv"
   "$CANDIDATE_DIR/spw_datalink_rx_hold.sv"
-  "$CANDIDATE_DIR/spw_datalink_rx_decode.sv"
-  "$CANDIDATE_DIR/spw_datalink_credit.sv"
   "$CANDIDATE_DIR/spw_datalink.sv"
   "$RTL_DIR/spw_network.sv"
   "$RTL_DIR/spw_top.sv"
@@ -30,7 +28,7 @@ for TB in \
 do
   iverilog -g2012 -I "$CANDIDATE_DIR" -s "$TB" \
     -o "$BUILD_DIR/$TB.vvp" "${SOURCES[@]}" \
-    "$([[ -f "$CANDIDATE_DIR/$TB.sv" ]] && echo "$CANDIDATE_DIR/$TB.sv" || echo "$RTL_DIR/tb/$TB.sv")" 2>"$BUILD_DIR/$TB.compile.log"
+    "$RTL_DIR/tb/$TB.sv" 2>"$BUILD_DIR/$TB.compile.log"
   (cd "$BUILD_DIR" && vvp "./$TB.vvp")
   test -s "$BUILD_DIR/$TB.vcd"
 done
@@ -43,31 +41,15 @@ iverilog -g2012 -s tb_spw_rx_hold_contract \
 (cd "$BUILD_DIR" && vvp ./tb_spw_rx_hold_contract.vvp)
 test -s "$BUILD_DIR/tb_spw_rx_hold_contract.vcd"
 
-iverilog -g2012 -s tb_spw_rx_decode_contract \
-  -o "$BUILD_DIR/tb_spw_rx_decode_contract.vvp" \
-  "$CANDIDATE_DIR/spw_datalink_rx_decode.sv" \
-  "$CANDIDATE_DIR/tb_spw_rx_decode_contract.sv" \
-  2>"$BUILD_DIR/tb_spw_rx_decode_contract.compile.log"
-(cd "$BUILD_DIR" && vvp ./tb_spw_rx_decode_contract.vvp)
-test -s "$BUILD_DIR/tb_spw_rx_decode_contract.vcd"
-
-iverilog -g2012 -s tb_spw_credit_contract \
-  -o "$BUILD_DIR/tb_spw_credit_contract.vvp" \
-  "$CANDIDATE_DIR/spw_datalink_credit.sv" \
-  "$CANDIDATE_DIR/tb_spw_credit_contract.sv" \
-  2>"$BUILD_DIR/tb_spw_credit_contract.compile.log"
-(cd "$BUILD_DIR" && vvp ./tb_spw_credit_contract.vvp)
-test -s "$BUILD_DIR/tb_spw_credit_contract.vcd"
-
 iverilog -g2012 -I "$CANDIDATE_DIR" -s tb_spw_story \
   -o "$BUILD_DIR/tb_spw_story.vvp" "${SOURCES[@]}" \
-  "$STORY_DIR/spw_wave_observer.sv" "$CANDIDATE_DIR/tb_spw_story.sv" \
+  "$STORY_DIR/spw_wave_observer.sv" "$STORY_DIR/tb_spw_story.sv" \
   2>"$BUILD_DIR/tb_spw_story.compile.log"
 (cd "$BUILD_DIR" && vvp ./tb_spw_story.vvp)
 test -s "$BUILD_DIR/spw_story.vcd"
 python3 "$STORY_DIR/check_gtkw_signals.py" "$BUILD_DIR/spw_story.vcd" \
-  "$STORY_DIR/overview.gtkw" "$CANDIDATE_DIR/link_initialize.gtkw" \
-  "$CANDIDATE_DIR/flow_control.gtkw" "$CANDIDATE_DIR/error_recovery.gtkw"
+  "$STORY_DIR/overview.gtkw" "$STORY_DIR/link_initialize.gtkw" \
+  "$STORY_DIR/flow_control.gtkw" "$STORY_DIR/error_recovery.gtkw"
 
 iverilog -g2012 -I "$CANDIDATE_DIR" -s tb_spw_perf_burst \
   -o "$BUILD_DIR/tb_spw_perf_burst.vvp" "${SOURCES[@]}" \
@@ -75,17 +57,4 @@ iverilog -g2012 -I "$CANDIDATE_DIR" -s tb_spw_perf_burst \
   2>"$BUILD_DIR/tb_spw_perf_burst.compile.log"
 (cd "$BUILD_DIR" && vvp ./tb_spw_perf_burst.vvp)
 
-for CASE in 25:2:1 10:70:1 10:100:1 25:70:0 25:100:0; do
-  IFS=: read -r RATE PERIOD EXPECT_YIELD <<< "$CASE"
-  CASE_NAME="tb_spw_decision17_${RATE}mbps_${PERIOD}cyc"
-  iverilog -g2012 -I "$CANDIDATE_DIR" -s tb_spw_decision17_tc_starvation \
-    -Ptb_spw_decision17_tc_starvation.TX_RATE_MBPS="$RATE" \
-    -Ptb_spw_decision17_tc_starvation.TC_PERIOD_CYCLES="$PERIOD" \
-    -Ptb_spw_decision17_tc_starvation.EXPECT_YIELD="$EXPECT_YIELD" \
-    -o "$BUILD_DIR/$CASE_NAME.vvp" "${SOURCES[@]}" \
-    "$CANDIDATE_DIR/tb_spw_decision17_tc_starvation.sv" \
-    2>"$BUILD_DIR/$CASE_NAME.compile.log"
-  (cd "$BUILD_DIR" && vvp "./$CASE_NAME.vvp")
-done
-
-echo "PASS candidate regression: 8 directed + RX hold/decode/credit contracts + story + 4 presets + 64-item burst + 5 DECISION-17 rate/period cases"
+echo "PASS candidate regression: 8 directed + RX hold contract + story + 4 presets + 64-item burst"

@@ -1,0 +1,29 @@
+[*] GTKWave Analyzer v3.3.120
+[*] dumpfile "spw_story.vcd"
+[*] timestart 0
+@28
+tb_spw_story.story_phase[2:0]
+tb_spw_story.link_state[2:0]
+tb_spw_story.obs_error_any_evt
+tb_spw_story.obs_recovery_active
+tb_spw_story.obs_reconnect_active
+tb_spw_story.obs_link_run
+tb_spw_story.obs_tx_char_kind[3:0]
+tb_spw_story.obs_rx_char_kind[3:0]
+tb_spw_story.dut.u_spw_datalink.w_next_state[2:0]
+tb_spw_story.err_disconnect
+tb_spw_story.err_parity
+tb_spw_story.err_esc
+tb_spw_story.err_credit
+tb_spw_story.dut.link_recovery_evt
+tb_spw_story.dut.tx_enable
+tb_spw_story.dut.rx_enable
+tb_spw_story.dut.rx_parity_enable
+tb_spw_story.dut.u_spw_datalink.r_esc_pending
+tb_spw_story.dut.u_spw_datalink.r_rx_pending_esc
+tb_spw_story.dut.u_spw_enc.r_rx_pending_valid
+tb_spw_story.dut.u_spw_enc.r_rx_locked
+tb_spw_story.dut.u_spw_phy.r_seen_any_transition
+tb_spw_story.dut.u_spw_phy.r_no_change_cnt[6:0]
+tb_spw_story.tx_d
+tb_spw_story.tx_s

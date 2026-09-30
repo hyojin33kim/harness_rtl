@@ -8,35 +8,29 @@
         if (!i_rst_n) begin
             r_tc_pending <= 1'b0;
             r_tc_value   <= 8'd0;
-        end else begin
-            // Clocked branch: synchronous control has priority over updates.
-            if (w_entering_error_reset) begin
-                r_tc_pending <= 1'b0;   // ErrorReset 진입 시 폐기 (§9.1)
-                r_tc_value   <= 8'd0;
-            end else if (i_tx_timecode_req_evt && r_state == ST_RUN) begin
-                // 새 Timecode 요청 — drop-old 정책 (참조 모델 deque(maxlen=1) 동작과
-                // 동일한 "최신값으로 덮어쓰기". RUN 이전 도착은 이 조건 자체가
-                // 거짓이라 자동으로 discard 됨(ERRATA-19).
-                r_tc_pending <= 1'b1;
-                r_tc_value   <= i_tx_timecode_data;
-            end else if (w_tx_bc_esc_accept_evt) begin
-                // Broadcast ESC ownership moved to Encoder; retain payload in
-                // r_bc_value while a newer host request may occupy r_tc_value.
-                r_tc_pending <= 1'b0;
-            end
+        end else if (w_entering_error_reset) begin
+            r_tc_pending <= 1'b0;   // ErrorReset 진입 시 폐기 (§9.1)
+            r_tc_value   <= 8'd0;
+        end else if (i_tx_timecode_req_evt && r_state == ST_RUN) begin
+            // 새 Timecode 요청 — drop-old 정책 (참조 모델 deque(maxlen=1) 동작과
+            // 동일한 "최신값으로 덮어쓰기". RUN 이전 도착은 이 조건 자체가
+            // 거짓이라 자동으로 discard 됨(ERRATA-19).
+            r_tc_pending <= 1'b1;
+            r_tc_value   <= i_tx_timecode_data;
+        end else if (w_tx_bc_esc_accept_evt) begin
+            // Broadcast ESC ownership moved to Encoder; retain payload in
+            // r_bc_value while a newer host request may occupy r_tc_value.
+            r_tc_pending <= 1'b0;
         end
     end
 
     always_ff @(posedge i_clk or negedge i_rst_n) begin
         if (!i_rst_n) begin
             r_bc_value <= 8'd0;
-        end else begin
-            // Clocked branch: synchronous control has priority over updates.
-            if (w_entering_error_reset) begin
-                r_bc_value <= 8'd0;
-            end else if (w_tx_bc_esc_accept_evt) begin
-                r_bc_value <= r_tc_value;
-            end
+        end else if (w_entering_error_reset) begin
+            r_bc_value <= 8'd0;
+        end else if (w_tx_bc_esc_accept_evt) begin
+            r_bc_value <= r_tc_value;
         end
     end
 
@@ -61,37 +55,6 @@
     tx_kind_e r_tx_req_kind;
     tx_kind_e r_tx_inflight_kind;
 
-    // DECISION-17 Option B: after eight contested Timecode pairs, grant one
-    // scheduler slot to a ready FCT or N-Char. Count only newly selected
-    // requests; the held request and the atomic ESC payload are not slots.
-    localparam logic [3:0] TC_STARVE_THRESHOLD = 4'd8;
-    logic w_tc_other_ready;
-    logic w_tc_starve_yield;
-    logic w_tx_select_evt;
-    assign w_tc_other_ready = w_fct_send_ok
-                            || (i_net_tx_valid && (w_tx_credit > 6'd0));
-    assign w_tc_starve_yield = (r_state == ST_RUN) && r_tc_pending
-                             && w_tc_other_ready
-                             && (r_tc_starve_cnt >= TC_STARVE_THRESHOLD);
-    assign w_tx_select_evt = !r_tx_req_valid
-                          && (r_tx_inflight_kind == TXK_NONE)
-                          && w_tx_candidate_valid;
-
-    always_ff @(posedge i_clk or negedge i_rst_n) begin
-        if (!i_rst_n) begin
-            r_tc_starve_cnt <= 4'd0;
-        end else begin
-            if (w_entering_error_reset) begin
-                r_tc_starve_cnt <= 4'd0;
-            end else if (w_tx_select_evt && r_state == ST_RUN && !r_esc_pending) begin
-                if (w_tx_candidate_kind == TXK_BC_ESC && w_tc_other_ready)
-                    r_tc_starve_cnt <= r_tc_starve_cnt + 4'd1;
-                else
-                    r_tc_starve_cnt <= 4'd0;
-            end
-        end
-    end
-
     // 우선순위 (RUN): ESC 시퀀스 진행중(최우선) > Timecode > FCT > N-Char > Null(유휴)
     // 우선순위 (CONNECTING): 초기 FCT > 일반 FCT > Null
     // STARTED: Null 만 (850ns 타임아웃 방지)
@@ -115,7 +78,7 @@
         end else if (r_state == ST_RUN) begin
             // ── RUN 상태 ─────────────────────────────────────────
             // 1순위: Timecode ESC (ECSS 5.5.6 — Broadcast code 최우선)
-            if (r_tc_pending && !w_tc_starve_yield) begin
+            if (r_tc_pending) begin
                 w_tx_candidate_valid = 1'b1;
                 w_tx_candidate_data  = {1'b1, 6'b0, 2'b11};
                 w_tx_candidate_kind  = TXK_BC_ESC;
@@ -127,7 +90,7 @@
                 w_tx_candidate_kind  = TXK_FCT;
 
             // 3순위: N-Char (credit 있고 TX FIFO 에 데이터 있을 때)
-            end else if (i_net_tx_valid && w_tx_credit > 6'd0) begin
+            end else if (i_net_tx_valid && r_tx_credit > 6'd0) begin
                 w_tx_candidate_valid = 1'b1;
                 w_tx_candidate_data  = i_net_tx_data;
                 w_tx_candidate_kind  = TXK_NCHAR;
@@ -141,8 +104,8 @@
 
         end else if (r_state == ST_CONNECTING) begin
             // ── CONNECTING 상태 ──────────────────────────────────
-            // 1순위: 초기 FCT 선송신 (§5.4 w_req_initial_fct)
-            if (w_req_initial_fct > 3'd0) begin
+            // 1순위: 초기 FCT 선송신 (§5.4 r_req_initial_fct)
+            if (r_req_initial_fct > 3'd0) begin
                 w_tx_candidate_valid = 1'b1;
                 w_tx_candidate_data  = {1'b1, 6'b0, 2'b00};
                 w_tx_candidate_kind  = TXK_FCT;
@@ -176,21 +139,18 @@
             r_tx_req_valid <= 1'b0;
             r_tx_req_char  <= 9'd0;
             r_tx_req_kind  <= TXK_NONE;
-        end else begin
-            // Clocked branch: synchronous control has priority over updates.
-            if (w_entering_error_reset || !o_tx_enable) begin
-                r_tx_req_valid <= 1'b0;
-                r_tx_req_char  <= 9'd0;
-                r_tx_req_kind  <= TXK_NONE;
-            end else if (r_tx_req_valid && i_enc_tx_ready) begin
-                r_tx_req_valid <= 1'b0;
-                r_tx_req_kind  <= TXK_NONE;
-            end else if (!r_tx_req_valid && r_tx_inflight_kind == TXK_NONE
-                         && w_tx_candidate_valid) begin
-                r_tx_req_valid <= 1'b1;
-                r_tx_req_char  <= w_tx_candidate_data;
-                r_tx_req_kind  <= w_tx_candidate_kind;
-            end
+        end else if (w_entering_error_reset || !o_tx_enable) begin
+            r_tx_req_valid <= 1'b0;
+            r_tx_req_char  <= 9'd0;
+            r_tx_req_kind  <= TXK_NONE;
+        end else if (r_tx_req_valid && i_enc_tx_ready) begin
+            r_tx_req_valid <= 1'b0;
+            r_tx_req_kind  <= TXK_NONE;
+        end else if (!r_tx_req_valid && r_tx_inflight_kind == TXK_NONE
+                     && w_tx_candidate_valid) begin
+            r_tx_req_valid <= 1'b1;
+            r_tx_req_char  <= w_tx_candidate_data;
+            r_tx_req_kind  <= w_tx_candidate_kind;
         end
     end
 
@@ -203,15 +163,12 @@
     always_ff @(posedge i_clk or negedge i_rst_n) begin
         if (!i_rst_n) begin
             r_tx_inflight_kind <= TXK_NONE;
-        end else begin
-            // Clocked branch: synchronous control has priority over updates.
-            if (w_entering_error_reset) begin
-                r_tx_inflight_kind <= TXK_NONE;
-            end else if (w_enc_tx_accept_evt) begin
-                r_tx_inflight_kind <= r_tx_req_kind;
-            end else if (i_enc_tx_commit || i_enc_tx_abort) begin
-                r_tx_inflight_kind <= TXK_NONE;
-            end
+        end else if (w_entering_error_reset) begin
+            r_tx_inflight_kind <= TXK_NONE;
+        end else if (w_enc_tx_accept_evt) begin
+            r_tx_inflight_kind <= r_tx_req_kind;
+        end else if (i_enc_tx_commit || i_enc_tx_abort) begin
+            r_tx_inflight_kind <= TXK_NONE;
         end
     end
 
@@ -227,17 +184,14 @@
         if (!i_rst_n) begin
             r_esc_pending <= 1'b0;
             r_esc_kind    <= 1'b0;
-        end else begin
-            // Clocked branch: synchronous control has priority over updates.
-            if (w_entering_error_reset) begin
-                r_esc_pending <= 1'b0;       // ESC 시퀀스 강제 중단 (§9.1)
-                r_esc_kind    <= 1'b0;
-            end else if (w_tx_null_esc_commit_evt || w_tx_bc_esc_commit_evt) begin
-                r_esc_pending <= 1'b1;       // ESC wire completion → second request
-                r_esc_kind    <= w_tx_bc_esc_commit_evt;
-            end else if (w_tx_null_fct_commit_evt || w_tx_bc_data_commit_evt) begin
-                r_esc_pending <= 1'b0;       // two-character sequence committed
-            end
+        end else if (w_entering_error_reset) begin
+            r_esc_pending <= 1'b0;       // ESC 시퀀스 강제 중단 (§9.1)
+            r_esc_kind    <= 1'b0;
+        end else if (w_tx_null_esc_commit_evt || w_tx_bc_esc_commit_evt) begin
+            r_esc_pending <= 1'b1;       // ESC wire completion → second request
+            r_esc_kind    <= w_tx_bc_esc_commit_evt;
+        end else if (w_tx_null_fct_commit_evt || w_tx_bc_data_commit_evt) begin
+            r_esc_pending <= 1'b0;       // two-character sequence committed
         end
     end
 

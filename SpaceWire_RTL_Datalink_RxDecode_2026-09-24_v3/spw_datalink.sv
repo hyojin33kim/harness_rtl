@@ -21,53 +21,71 @@ module spw_datalink #(
     parameter int CNT_6US       = 640,   // @ 100MHz
     parameter int CNT_12US      = 1280   // @ 100MHz
 ) (
-    // Clock / hardware reset
+    // ── Clock / Reset ────────────────────────────────────────────
     input  logic        i_clk,
-    input  logic        i_rst_n,
+    input  logic        i_rst_n,          // Active-Low Async (전체 초기화, DECISION-16)
 
-    // TX data I/F: Network -> Data Link -> Encoder
-    input  logic [8:0]  i_net_tx_data,
-    input  logic        i_net_tx_valid,
-    output logic        o_net_tx_ready,
-    output logic [8:0]  o_enc_tx_char,
-    output logic        o_enc_tx_valid,
-    input  logic        i_enc_tx_ready,
+    // ── MIB 제어 ─────────────────────────────────────────────────
+    input  logic        i_link_enable,        // LinkEnable
+    input  logic        i_link_start,     // LinkStart
+    input  logic        i_auto_start,     // AutoStart
+    input  logic        i_port_reset,     // PortReset (동기, 프로토콜 상태만, DECISION-16)
 
-    // TX control I/F: completion, enable, timecode and recovery
-    input  logic        i_enc_tx_commit,
-    input  logic        i_enc_tx_abort,
-    output logic        o_tx_enable,
-    input  logic        i_tx_timecode_req_evt,
-    input  logic [7:0]  i_tx_timecode_data,
-    output logic        o_link_recovery_evt,
-
-    // RX data I/F: Encoder -> Data Link -> Network
+    // ── Encoding Layer → DataLink (수신 문자) ───────────────────
+    // 주의: spw_enc가 10비트 심볼을 완성한 다음 클럭에 1클럭 pulse
     input  logic [8:0]  i_enc_rx_char,
-    input  logic        i_enc_rx_valid,
+    input  logic        i_enc_rx_valid,         // unstalled Encoder RX event
+    input  logic        i_enc_parity_error,
+    input  logic        i_disconnect_err_evt,     // Disconnect 에러 펄스
+
+    // ── Data Link → Encoding enable contract (ECSS 5.5.2.h) ──────
+    output logic        o_tx_enable,
+    output logic        o_rx_enable,
+    output logic        o_rx_parity_enable,
+
+    // ── DataLink → Encoding Layer (송신 문자) ───────────────────
+    output logic [8:0]  o_enc_tx_char,        // registered character request
+    output logic        o_enc_tx_valid,       // held until ENC_TX_ACCEPT
+    input  logic        i_enc_tx_ready,
+    input  logic        i_enc_tx_commit,      // final serialized bit reached D/S boundary
+    input  logic        i_enc_tx_abort,       // accepted character terminated by recovery
+    output logic        o_link_recovery_evt,     // Encoder 강제 리셋 (ErrorReset 진입 시 1클럭 pulse)
+
+    // ── Network Layer TX ─────────────────────────────────────────
+    input  logic [8:0]  i_net_tx_data,       // Network TX FIFO head
+    input  logic        i_net_tx_valid,      // Network owns data while valid && !ready
+    output logic        o_net_tx_ready,      // DataLink takes ownership on valid && ready
+
+    // ── Network Layer RX ─────────────────────────────────────────
     output logic [8:0]  o_net_rx_data,
     output logic        o_net_rx_valid,
     input  logic        i_net_rx_ready,
-
-    // RX control I/F: classification, reserve and timecode
-    input  logic        i_enc_parity_error,
-    output logic        o_rx_enable,
-    output logic        o_rx_parity_enable,
     output logic        o_net_rx_is_ctrl,
-    input  logic [$clog2(RX_FIFO_DEPTH+1)-1:0] i_rx_fifo_free_count,
-    output logic        o_rx_timecode_commit_evt,
-    output logic [7:0]  o_rx_timecode_data,
 
-    // Link-wide control and status
-    input  logic        i_link_enable,
-    input  logic        i_link_start,
-    input  logic        i_auto_start,
-    input  logic        i_port_reset,
-    input  logic        i_disconnect_err_evt,
-    output logic [2:0]  o_link_state,
+    // ── FCT 조건 A: spw_network 제공 ─────────────────────────────
+    // 값 = RX_FIFO_DEPTH - rx_fifo 점유량, 폭 = $clog2(RX_FIFO_DEPTH+1) 비트
+    // 비교(>=8, <=48) 로직은 본 모듈 내부 완결, spw_network는 raw 값만 제공
+    input  logic [$clog2(RX_FIFO_DEPTH+1)-1:0] i_rx_fifo_free_count,
+
+    // ── Timecode ──────────────────────────────────────────────────
+    // i_tx_timecode_req_evt은 spw_network에서 rising edge 감지 후 1클럭 펄스로 전달
+    input  logic        i_tx_timecode_req_evt,        // Timecode 송신 트리거 (미결 #4, 해소: RUN 아니면 discard)
+    input  logic [7:0]  i_tx_timecode_data,        // flag[7:6] + counter[5:0]
+    output logic        o_rx_timecode_commit_evt,      // 수신 Timecode 완성 펄스
+    output logic [7:0]  o_rx_timecode_data,      // 수신 Timecode 값
+
+    // ── 상태 출력 ─────────────────────────────────────────────────
+    output logic [2:0]  o_link_state,    // 0:ER 1:EW 2:RD 3:ST 4:CN 5:RN
     output logic        o_disconnect_err_evt,
     output logic        o_parity_err_evt,
     output logic        o_esc_err_evt,
-    output logic        o_credit_err_evt
+    output logic        o_credit_err_evt     // 미결 #3, 본 파일에서 구현
+    // [v2, DECISION-13 소유권 재배치] ow_err_tx_invalid 포트 제거됨.
+    // spw_network 세션(HO_05)에서 golden model SpWNetwork.push_tx() 재대조 결과,
+    // 9비트 TX 핀 유효성 검사는 spw_network가 i_tx_data9 수신 시점에 직접 판정하는
+    // 로직임을 확인 — spw_datalink §8.3은 항상 유효한 FCT/ESC만 생성해 이 에러가
+    // 발생할 여지가 구조적으로 없다(§9 원 주석과 결론 일치). 이제 spw_network가
+    // 자신의 포트로 spw_top에 직접 노출한다. spw_datalink_rtl_guide_v6.md 참조.
 );
 
     localparam int TIMER_MAX = (CNT_6US > CNT_12US) ? CNT_6US : CNT_12US;
@@ -91,13 +109,13 @@ module spw_datalink #(
     logic [TIMER_W-1:0] r_timer_cnt;
     logic        r_timer_expired;
 
-    wire [5:0]   w_tx_credit;             // child-owned, 0~56
-    wire [5:0]   w_rx_credit;             // child-owned, 0~56
+    logic [5:0]  r_tx_credit;             // 0~56
+    logic [5:0]  r_rx_credit;             // 0~56
 
     logic        r_null_seen;             // auto_start 조건
     logic        r_got_fct;               // Connecting→Run 조건
     logic        r_sent_fct;              // SentFCT 래치 (Connecting)
-    wire [2:0]   w_req_initial_fct;       // child-owned countdown
+    logic [2:0]  r_req_initial_fct;       // min(RX_FIFO_DEPTH/8, 7) 카운트다운
 
     logic        r_seen_any_transition;   // D/S 최초 천이 감지 (disconnect 게이트)
 
@@ -112,8 +130,6 @@ module spw_datalink #(
     logic [7:0]  r_tc_value;              // 송신 대기 Timecode 값
     logic        r_tc_pending;            // 래치된 Timecode 유효 플래그
     logic [7:0]  r_bc_value;              // accepted Broadcast sequence payload
-    // DECISION-17: consecutive contested Timecode selections (0..8).
-    logic [3:0]  r_tc_starve_cnt;
 
     // =========================================================================
     // 내부 comb 신호 (다음 단계에서 §3.3/§5~§9 구현 시 채움)
@@ -124,7 +140,7 @@ module spw_datalink #(
     logic        w_entering_error_reset;
 
     logic        w_got_null, w_got_fct, w_got_nchar, w_got_timecode, w_esc_error;
-    wire         w_credit_err;
+    logic        w_tx_credit_err, w_rx_credit_err, w_credit_err;
     logic        w_fct_send_ok;
     logic        w_enc_tx_accept_evt;
     logic        w_tx_bc_esc_accept_evt;
@@ -145,31 +161,7 @@ module spw_datalink #(
 
     `include "spw_datalink_link_fsm.svh"
     `include "spw_datalink_rx.svh"
-    assign w_credit_sync_rst = (w_next_state == ST_ERROR_RESET);
-    assign r_err_credit = w_credit_err;
-    assign o_credit_err_evt = w_credit_err;
-
-    spw_datalink_credit #(
-        .RX_FIFO_DEPTH(RX_FIFO_DEPTH),
-        .MAX_CREDIT(MAX_CREDIT)
-    ) u_credit (
-        .i_clk(i_clk),
-        .i_rst_n(i_rst_n),
-        .i_credit_sync_rst(w_credit_sync_rst),
-        .i_link_state(r_state),
-        .i_entering_connecting(w_entering_connecting),
-        .i_got_fct(w_got_fct),
-        .i_got_nchar(w_got_nchar),
-        .i_tx_nchar_commit_evt(w_tx_nchar_commit_evt),
-        .i_tx_fct_commit_evt(w_tx_fct_commit_evt),
-        .i_rx_fifo_free_count(i_rx_fifo_free_count),
-        .i_rx_hold_valid(w_net_rx_hold_valid),
-        .o_tx_credit(w_tx_credit),
-        .o_rx_credit(w_rx_credit),
-        .o_req_initial_fct(w_req_initial_fct),
-        .o_credit_err(w_credit_err),
-        .o_fct_send_ok(w_fct_send_ok)
-    );
+    `include "spw_datalink_credit.svh"
     `include "spw_datalink_tx.svh"
     `include "spw_datalink_error_checks.svh"
 endmodule

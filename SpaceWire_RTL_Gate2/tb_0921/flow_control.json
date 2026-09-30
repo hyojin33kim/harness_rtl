@@ -1,0 +1,10 @@
+{ "signal": [
+  { "name": "Link state",       "wave": "=.........", "data": ["RUN"] },
+  { "name": "FCT received",     "wave": "010......." },
+  { "name": "tx_credit",       "wave": "=.=...=...", "data": ["0", "8", "7"] },
+  { "name": "nchar_valid",      "wave": "0..1...0.." },
+  { "name": "nchar_accept_evt", "wave": "0...10...." },
+  { "name": "tx_char_commit",   "wave": "0.....10.." },
+  { "name": "rx_nchar_commit",  "wave": "0.......10" },
+  { "name": "host_rx_valid",    "wave": "0........1" }
+], "config": { "hscale": 2 } }

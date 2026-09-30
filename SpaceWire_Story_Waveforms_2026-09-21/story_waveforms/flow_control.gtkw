@@ -1,0 +1,37 @@
+[*] GTKWave Analyzer v3.3.120
+[*] dumpfile "spw_story.vcd"
+[*] timestart 0
+@28
+tb_spw_story.story_phase[2:0]
+tb_spw_story.link_state[2:0]
+tb_spw_story.obs_link_run
+tb_spw_story.obs_tx_char_kind[3:0]
+tb_spw_story.obs_tx_char_hex[8:0]
+tb_spw_story.obs_tx_char_evt
+tb_spw_story.obs_tx_is_nchar
+tb_spw_story.obs_rx_char_kind[3:0]
+tb_spw_story.obs_rx_char_hex[8:0]
+tb_spw_story.obs_rx_char_evt
+tb_spw_story.obs_rx_is_nchar
+tb_spw_story.obs_tx_credit_hex[5:0]
+tb_spw_story.obs_rx_credit_hex[5:0]
+tb_spw_story.obs_tx_fifo_level_hex[4:0]
+tb_spw_story.obs_rx_fifo_level_hex[4:0]
+tb_spw_story.obs_credit_available
+tb_spw_story.obs_flow_blocked
+tb_spw_story.host_tx_item[8:0]
+tb_spw_story.host_tx_valid
+tb_spw_story.host_tx_ready
+tb_spw_story.dut.tx_nchar_data[8:0]
+tb_spw_story.dut.tx_nchar_valid
+tb_spw_story.dut.tx_nchar_accept_evt
+tb_spw_story.dut.u_spw_datalink.r_tx_credit[5:0]
+tb_spw_story.dut.u_spw_datalink.r_rx_credit[5:0]
+tb_spw_story.dut.rx_fifo_free_count[4:0]
+tb_spw_story.dut.u_spw_datalink.w_send_fct
+tb_spw_story.dut.u_spw_datalink.w_got_fct
+tb_spw_story.dut.u_spw_datalink.w_send_nchar
+tb_spw_story.dut.rx_nchar_commit_evt
+tb_spw_story.host_rx_item[8:0]
+tb_spw_story.host_rx_valid
+tb_spw_story.host_rx_ready
